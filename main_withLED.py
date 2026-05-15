@@ -10,7 +10,6 @@ import os
 import wave
 import base64
 import serial
-import math
 from io import BytesIO
 
 from viam.robot.client import RobotClient
@@ -45,29 +44,39 @@ def send_volume(ser, volume: float):
             pass
 
 
-def estimate_mp3_volume(mp3_data: bytes) -> float:
-    """Estimate relative volume/energy from MP3 bytes."""
-    step = max(1, len(mp3_data) // 500)
-    samples = [mp3_data[i] for i in range(0, len(mp3_data), step)]
-    if not samples:
-        return 0.0
-    mean = sum(samples) / len(samples)
-    variance = sum((s - mean) ** 2 for s in samples) / len(samples)
-    normalized = min(math.sqrt(variance) / 50.0, 1.0)
-    return normalized
+def get_volume_chunks(mp3_data: bytes, chunk_ms: int = 100):
+    """Decode MP3 and return list of (volume, duration_seconds) per chunk."""
+    from pydub import AudioSegment
+    import numpy as np
+
+    audio = AudioSegment.from_mp3(BytesIO(mp3_data))
+    audio = audio.set_channels(1)  # mono
+
+    chunks = []
+    for i in range(0, len(audio), chunk_ms):
+        chunk = audio[i:i + chunk_ms]
+        samples = np.array(chunk.get_array_of_samples()).astype(np.float32)
+        if len(samples) == 0:
+            continue
+        rms = np.sqrt(np.mean(samples ** 2))
+        # Normalize: max RMS for 16-bit audio is 32768
+        normalized = min(rms / 32768.0 * 3.0, 1.0)  # *3 to boost sensitivity
+        chunks.append((normalized, chunk_ms / 1000.0))
+
+    return chunks
 
 
-async def animate_leds(ser, volume: float, duration: float):
-    """Send volume to LEDs, then fade out over duration."""
-    send_volume(ser, volume)
-    await asyncio.sleep(duration * 0.8)
-    # Fade out
-    steps = 10
-    for i in range(steps):
-        faded = volume * (1 - i / steps)
-        send_volume(ser, faded)
-        await asyncio.sleep(0.05)
-    send_volume(ser, 0.0)
+async def animate_leds_realtime(ser, mp3_data: bytes):
+    """Send volume updates in real time as audio plays."""
+    try:
+        chunks = get_volume_chunks(mp3_data)
+        for volume, duration in chunks:
+            send_volume(ser, volume)
+            await asyncio.sleep(duration)
+        send_volume(ser, 0.0)
+    except Exception as e:
+        print(f"LED animation error: {e}")
+        send_volume(ser, 0.0)
 
 
 class OpenAIVoiceAssistant:
@@ -206,18 +215,11 @@ class OpenAIVoiceAssistant:
             )
             mp3_data = response.content
 
-            # Estimate volume and duration
-            volume = estimate_mp3_volume(mp3_data)
-            words = len(text.split())
-            estimated_duration = words / 2.5  # ~2.5 words per second
-
-            print(f"Estimated volume: {volume:.2f}, duration: {estimated_duration:.1f}s")
-
-            # Play audio and animate LEDs concurrently
+            # Play audio and animate LEDs concurrently in real time
             audio_info = AudioInfo(codec=AudioCodec.MP3)
             await asyncio.gather(
                 self.audioout.play(mp3_data, audio_info),
-                animate_leds(self.ser, volume, estimated_duration)
+                animate_leds_realtime(self.ser, mp3_data)
             )
         except Exception as e:
             print(f"Error in text to speech: {e}")
