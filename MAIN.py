@@ -1,8 +1,44 @@
 """
 Voice assistant using OpenAI Whisper, GPT-4o, and OpenAI TTS.
-With camera vision support via Viam and NeoPixel volume display.
+With camera vision support, NeoPixel volume display, movement control,
+person following, and obstacle awareness via Viam.
 
-Requires: pip install viam-sdk openai pyserial --break-system-packages
+Requirements:
+    pip install viam-sdk openai pyserial pydub numpy --break-system-packages
+    sudo apt install ffmpeg -y
+
+Hardware:
+    - Raspberry Pi 5 (https://amzn.to/4p3ncNY)
+    - Scuttle v3 wheeled base with GPIO motors (https://amzn.to/4b6iHMQ)
+      and AS5048B encoders
+    - Motor controller / driver shield (https://amzn.to/3SXU2nA)
+    - RPLidar (connected to /dev/ttyUSB0)
+    - Raspberry Pi HQ Camera (CSI) (https://amzn.to/44OXX8I)
+    - AirHug USB speaker/mic (https://amzn.to/4f1tLMm)
+    - Adafruit Qualia ESP32-S3 with round display (connected via /dev/ttyACM0)
+    - 16x Adafruit NeoPixel strip on Qualia board A0 pin
+    - MPU-6050 IMU (https://amzn.to/4gvAznX)
+    - Anker power bank (https://amzn.to/4eILc5D)
+
+Viam components required (configured in app.viam.com):
+    - wake-word (viam:filtered-audio:wake-word-filter, wake word: "robot")
+    - filter (viam:system-audio:microphone)
+    - speaker (viam:system-audio:speaker)
+    - camera (viam:camera:csi-pi)
+    - base (rdk:builtin:wheeled)
+    - Lidar (viam:lidar:rplidar)
+    - vision-1 (rdk:builtin:mlmodel, using EfficientDet-COCO)
+
+Credentials to fill in:
+    - OpenAI API key (line ~100)
+    - Viam API key, API key ID, and robot address (bottom of file)
+
+Wake word: "Robot"
+Voice commands: move forward/backward, turn left/right, stop,
+                dance, follow me, stop following, get out of the way,
+                describe what you see, how far is the wall
+
+(As an Amazon Associate, I earn from qualifying purchases #ad)
 """
 
 import asyncio
