@@ -1,18 +1,17 @@
 # Scuttle AI Voice Assistant Robot
 
-A voice-controlled robot built on a Scuttle v3 wheeled base running on a Raspberry Pi 5, powered by OpenAI Whisper, GPT-4o, and Viam robotics platform.
+Build kit:
+👉 https://ScuttleRobot.org (Checkout Code: AVIVMAKES for 10% off!)
 
-> (As an Amazon Associate, I earn from qualifying purchases #ad)
+
 
 ---
 
-## 🛠️ Hardware
+## 🛠️ Hardware you need, not in the official build kit
 
 | Component | Link |
 |---|---|
-| Raspberry Pi 5 | https://amzn.to/4p3ncNY |
-| High-Torque DC Drive Motors (120 RPM) | https://amzn.to/4b6iHMQ |
-| Motor Controller / Driver Shield | https://amzn.to/3SXU2nA |
+(As an Amazon Associate, I earn from qualifying purchases #ad)
 | Raspberry Pi HQ Camera (M12 / CSI) | https://amzn.to/44OXX8I |
 | AirHug USB Speaker & Microphone | https://amzn.to/4f1tLMm |
 | MPU-6050 6-DoF Accelerometer/Gyro IMU | https://amzn.to/4gvAznX |
@@ -20,7 +19,10 @@ A voice-controlled robot built on a Scuttle v3 wheeled base running on a Raspber
 | Adafruit Qualia ESP32-S3 (round display) | (see Adafruit) |
 | 16x NeoPixel strip | (see Adafruit) |
 | RPLidar (any model) | |
-| AS5048B Magnetic Encoders (x2) | |
+3030 Vertical Extrusion |https://amzn.to/44utr41|
+HDMI to CSI Camera Adapter Board |https://amzn.to/44Mue09|
+SO-101 Robotic Arm Kit |https://amzn.to/3QWlG3v|
+Upgraded Servos (optional) |https://amzn.to/4eG8hpt|
 
 ---
 
@@ -28,10 +30,10 @@ A voice-controlled robot built on a Scuttle v3 wheeled base running on a Raspber
 
 | File | Location | Description |
 |---|---|---|
-| `main.py` | `/home/aviv/AI-ASSIST/main.py` | Main voice assistant code (runs on Pi) |
+| `main.py` | `/home/username/AI-ASSIST/main.py` | Main voice assistant code (runs on Pi) |
 | `code.py` | Qualia CIRCUITPY drive | CircuitPython code for the round display and NeoPixels |
-| `smooth_base/` | `/home/aviv/smooth_base/` | Custom Viam module for smooth motor ramping |
-| `eyes_viam.py` | `/home/aviv/AI-ASSIST/eyes_viam.py` | Local Viam module — sends face tracking gaze coordinates over serial to the Qualia display |
+| `smooth_base/` | `/home/username/smooth_base/` | Custom Viam module for smooth motor ramping |
+| `eyes_viam.py` | `/home/username/AI-ASSIST/eyes_viam.py` | Local Viam module — sends face tracking gaze coordinates over serial to the Qualia display |
 
 ---
 
@@ -59,7 +61,7 @@ sudo chmod 666 /dev/ttyUSB0
 ```
 
 ### 5. Fill in credentials in main.py
-Open `/home/aviv/AI-ASSIST/main.py` and fill in:
+Open `/home/username/AI-ASSIST/main.py` and fill in:
 - **Line ~100**: Your OpenAI API key — get one at https://platform.openai.com/api-keys
 - **Bottom of file**: Your Viam API key, API key ID, and robot address — found in the Connect tab on app.viam.com
 
@@ -120,7 +122,7 @@ Log into [app.viam.com](https://app.viam.com) and configure the following compon
 ## 🚀 Running the Assistant
 
 ```bash
-python3 /home/aviv/AI-ASSIST/main.py
+python3 /home/username/AI-ASSIST/main.py
 ```
 
 Make sure Thonny is **closed** before running, otherwise it will block the serial connection to the Qualia board.
@@ -161,13 +163,13 @@ Say **"robot"** to wake the assistant, then speak your command:
 
 The `smooth_base` custom Viam module adds acceleration ramping to movement commands so the robot doesn't jerk when starting or stopping. It wraps the standard `base` component.
 
-To install it, copy the `smooth_base/` folder to `/home/aviv/smooth_base/` and make sure `run.sh` is executable:
+To install it, copy the `smooth_base/` folder to `/home/username/smooth_base/` and make sure `run.sh` is executable:
 
 ```bash
-chmod +x /home/aviv/smooth_base/run.sh
+chmod +x /home/username/smooth_base/run.sh
 ```
 
-Then add it as a local module in your Viam config pointing to `/home/aviv/smooth_base/run.sh`.
+Then add it as a local module in your Viam config pointing to `/home/username/smooth_base/run.sh`.
 
 ---
 
@@ -187,4 +189,4 @@ If your Pi SD card dies, you need to restore:
 
 ## 📺 YouTube
 
-Follow the build process on YouTube: [your channel link here]
+Follow the build process on YouTube: [youtube.com/c/avivmakesrobots]
