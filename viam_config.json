@@ -16,19 +16,6 @@
       }
     },
     {
-      "name": "smooth-base",
-      "api": "rdk:component:base",
-      "model": "aviv:smooth-base:smooth-base",
-      "attributes": {
-        "base_name": "base",
-        "ramp_steps": 10,
-        "step_delay": 0.03
-      },
-      "depends_on": [
-        "base"
-      ]
-    },
-    {
       "name": "board-1",
       "api": "rdk:component:board",
       "model": "viam:raspberry-pi:rpi5",
@@ -59,22 +46,6 @@
       }
     },
     {
-      "name": "Right-Motor",
-      "api": "rdk:component:motor",
-      "model": "rdk:builtin:gpio",
-      "attributes": {
-        "board": "board-1",
-        "dir_flip": true,
-        "pins": {
-          "a": "16",
-          "b": "15"
-        },
-        "encoder": "Right",
-        "ticks_per_rotation": 2,
-        "pwm_freq": 20000
-      }
-    },
-    {
       "name": "Left-Motor",
       "api": "rdk:component:motor",
       "model": "rdk:builtin:gpio",
@@ -83,11 +54,27 @@
         "encoder": "Left",
         "dir_flip": false,
         "ticks_per_rotation": 2,
+        "pwm_freq": 20000,
         "pins": {
-          "b": "11",
-          "a": "12",
-          "pwm_freq": 20000
+          "dir": "37",
+          "pwm": "32"
         }
+      }
+    },
+    {
+      "name": "Right-Motor",
+      "api": "rdk:component:motor",
+      "model": "rdk:builtin:gpio",
+      "attributes": {
+        "board": "board-1",
+        "dir_flip": true,
+        "pins": {
+          "dir": "18",
+          "pwm": "33"
+        },
+        "encoder": "Right",
+        "ticks_per_rotation": 2,
+        "pwm_freq": 20000
       }
     },
     {
@@ -217,24 +204,14 @@
       "name": "arm-1",
       "api": "rdk:component:arm",
       "model": "devrel:so101:arm",
-      "attributes": {}
-    },
-    {
-      "name": "gripper-1",
-      "api": "rdk:component:gripper",
-      "model": "devrel:so101:gripper",
-      "attributes": {}
-    },
-    {
-      "name": "sensor-1",
-      "api": "rdk:component:sensor",
-      "model": "devrel:so101:calibration",
-      "attributes": {}
+      "attributes": {
+        "port": "/dev/ttyACM0"
+      }
     }
   ],
   "services": [
     {
-      "name": "discovery-1",
+      "name": "so101-discovery",
       "api": "rdk:service:discovery",
       "model": "devrel:so101:discovery",
       "attributes": {}
